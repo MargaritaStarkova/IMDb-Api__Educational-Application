@@ -12,7 +12,8 @@ class FilmViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
     fun bind(film: FilmData) {
 
         Glide.with(itemView.context)
-            .load(film.image).into(image)
+            .load(film.image)
+            .into(image)
 
     }
 }

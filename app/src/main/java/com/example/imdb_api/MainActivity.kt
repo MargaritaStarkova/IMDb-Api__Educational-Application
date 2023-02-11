@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,25 +16,26 @@ import retrofit2.converter.gson.GsonConverterFactory
 const val API_KEY = "k_3ph8h7kw"
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var placeholderMessage: TextView
-    private lateinit var editText: EditText
-    private lateinit var recyclerView: RecyclerView
+    
+    private val baseUrl = "https://imdb-api.com/"
 
-
-    private val films = ArrayList<FilmData>()
-
-    val baseUrl = "https://imdb-api.com/"
-    val retrofit = Retrofit.Builder()
+    private val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val filmService = retrofit.create(FilmApi::class.java)
+    private val filmService = retrofit.create(FilmApi::class.java)
+
+    private val film = ArrayList<FilmData>()
+
+  //  private lateinit var placeholderMessage: TextView
+    private lateinit var editText: EditText
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        placeholderMessage = findViewById(R.id.placeholderMessage)
+       // placeholderMessage = findViewById(R.id.placeholderMessage)
 
         val searchButton = findViewById<Button>(R.id.searchButton)
         recyclerView = findViewById<RecyclerView>(R.id.films)
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        recyclerView.adapter = FilmAdapter(films)
+        recyclerView.adapter = FilmAdapter(film)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
 
@@ -75,29 +75,41 @@ class MainActivity : AppCompatActivity() {
                     response: Response<FilmResponse>
                 ) {
                     when (response.code()) {
-                        200 -> { Toast.makeText(this@MainActivity, "${response.body()?.results}", Toast.LENGTH_LONG).show()
-                            if (response.body()?.results?.image) {
-                                films.clear()
-                                films.addAll(response.body()?.results!!)
+                        200 ->
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                film.clear()
+                                film.addAll(response.body()?.results!!)
                                 recyclerView.adapter?.notifyDataSetChanged()
                                 //showMessage("", "")
-                                Toast.makeText(this@MainActivity, "ФИЛЬМЫ", Toast.LENGTH_LONG).show()
+                               // Toast.makeText(this@MainActivity, "ФИЛЬМЫ", Toast.LENGTH_LONG)
+                                  //  .show()
                             } else {
-                                Toast.makeText(this@MainActivity, "${response.code()}", Toast.LENGTH_LONG).show()
-                               // showMessage(getString(R.string.nothing_found), "")
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "ПОИСК НЕ ДАЛ РЕЗУЛЬТАТОВ",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                // showMessage(getString(R.string.nothing_found), "")
                             }
 
-                        }
-                        else -> {Toast.makeText(this@MainActivity, "УПС, ЧТО ТО ПОШЛО НЕ ТАК22222", Toast.LENGTH_LONG).show()}//showMessage(getString(R.string.something_went_wrong), response.code().toString())
-                    }
 
+                        else -> {Toast.makeText(
+                            this@MainActivity,
+                            "ПОИСК НЕ ДАЛ РЕЗУЛЬТАТОВ",
+                            Toast.LENGTH_LONG
+                        ).show()}
+                    }
                 }
 
                 override fun onFailure(call: Call<FilmResponse>, t: Throwable) {
-                   // TODO("Not yet implemented")
+                    Toast.makeText(this@MainActivity, t.message.toString(), Toast.LENGTH_LONG)
+                        .show()
                 }
 
             })
+
+
+
     }
 
 }
