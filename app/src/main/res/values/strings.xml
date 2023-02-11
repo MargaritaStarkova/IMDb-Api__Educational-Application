@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">IMDb-API</string>
+    <string name="search">Найти</string>
+    <string name="something_went_wrong">Что то пошло не так</string>
+</resources>
