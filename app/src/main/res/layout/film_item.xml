@@ -1,42 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
-    
+    android:layout_marginBottom="8dp"
+    android:background="#eeeeee">
+
     <ImageView
-        android:id="@+id/poster"
-        android:layout_width="100dp"
-        android:layout_height="160dp"
-        android:scaleType="centerCrop"/>
+        android:id="@+id/favorite"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/baseline_star_border_24" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center"
+        android:orientation="horizontal"
         android:padding="8dp">
-        <TextView
-            android:id="@+id/filmName"
-            android:layout_width="match_parent"
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="120dp"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Название фильма"
-            android:padding="8dp"
-            />
-        <TextView
-            android:id="@+id/filmDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="Название фильма"
-            android:padding="8dp"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="italic" />
+
+
+        </LinearLayout>
+
     </LinearLayout>
-
-
-    
-    
-    
-    
-    
-</LinearLayout>
+</FrameLayout>
