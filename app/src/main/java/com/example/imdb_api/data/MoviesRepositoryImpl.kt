@@ -1,10 +1,15 @@
 package com.example.imdb_api.data
 
-import com.example.imdb_api.data.dto.MoviesSearchRequest
-import com.example.imdb_api.data.dto.MoviesSearchResponse
+import com.example.imdb_api.data.dto.cast.MovieCastRequest
+import com.example.imdb_api.data.dto.cast.MovieCastResponse
+import com.example.imdb_api.data.dto.details.MovieDetailsRequest
+import com.example.imdb_api.data.dto.search.MoviesSearchRequest
+import com.example.imdb_api.data.dto.search.MoviesSearchResponse
 import com.example.imdb_api.data.storage.LocalStorage
 import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
+import com.example.imdb_api.data.dto.details.MovieDetailsResponse
+import com.example.imdb_api.domain.models.MovieDetails
 import com.example.imdb_api.util.Resource
 
 class MoviesRepositoryImpl(
@@ -49,6 +54,45 @@ class MoviesRepositoryImpl(
 
     override fun removeMovieFromFavorites(movie: Movie) {
         localStorage.removeFromFavorites(movie.id)
+    }
+    
+    override fun searchMovieDetails(movieId: String): Resource<MovieDetails> {
+        val response = networkClient.doRequest(MovieDetailsRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> Resource.Error("Проверьте подключение к интернету")
+            200 -> {
+                val result = (response as MovieDetailsResponse)
+            
+                if (result == null) {
+                    Resource.Error("Ничего не нашлось", null)
+                
+                } else {
+                    with(response) {
+                        Resource.Success(MovieDetails(id, title, imDbRating, year,
+                            countries, genres, directors, writers, stars, plot)) }
+                }
+            }
+            else -> Resource.Error("Ошибка сервера", null)
+        }
+    }
+    
+    override fun searchMovieCast(movieId: String): Resource<MovieCastResponse> {
+        val response = networkClient.doRequest(MovieCastRequest(movieId))
+        return when (response.resultCode) {
+            -1 -> Resource.Error("Проверьте подключение к интернету")
+            200 -> {
+                val result = (response as MovieCastResponse)
+            
+                if (result == null) {
+                    Resource.Error("Ничего не нашлось", null)
+                
+                } else {
+                    with(response) {
+                        Resource.Success(response) }
+                }
+            }
+            else -> Resource.Error("Ошибка сервера", null)
+        }
     }
 }
 

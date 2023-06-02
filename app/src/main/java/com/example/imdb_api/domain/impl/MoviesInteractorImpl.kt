@@ -10,7 +10,7 @@ class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInt
 
     private val executor = Executors.newCachedThreadPool()
 
-    override fun getMovies(expression: String, consumer: MoviesInteractor.MoviesConsumer) {
+    override fun getDataFromApi(expression: String, consumer: MoviesInteractor.Consumer) {
         executor.execute {
             when(val resource = repository.searchMovies(expression)) {
                 is Resource.Success -> { consumer.consume(resource.data, null) }

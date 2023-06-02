@@ -9,10 +9,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import com.example.imdb_api.R
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.Movie
@@ -114,35 +110,35 @@ class MoviesSearchViewModel
 
             renderState(MoviesState.Loading)
 
-            moviesInteractor.getMovies(newSearchText) { foundMovies, errorMessage ->
-
-                if (foundMovies != null) {
-                    movieList.clear()
-                    movieList.addAll(foundMovies)
-
-                }
-
-                when {
-                    errorMessage != null -> {
-                        renderState(
-                            MoviesState.Error(getApplication<Application>().getString(R.string.something_went_wrong))
-                        )
-
-                        showToast.postValue(errorMessage)
+            moviesInteractor.getDataFromApi(newSearchText, object : MoviesInteractor.Consumer {
+                override fun <T> consume(data: T?, errorMessage: String?) {
+                    if (data != null) {
+                        movieList.clear()
+                        movieList.addAll(data as List<Movie>)
                     }
-
-                    movieList.isEmpty() -> renderState(
-                        MoviesState.Error(
-                            getApplication<Application>().getString(R.string.nothing_found)
+    
+                    when {
+                        errorMessage != null -> {
+                            renderState(
+                                MoviesState.Error(getApplication<Application>().getString(R.string.something_went_wrong))
+                            )
+            
+                            showToast.postValue(errorMessage!!)
+                        }
+        
+                        movieList.isEmpty() -> renderState(
+                            MoviesState.Error(
+                                getApplication<Application>().getString(R.string.nothing_found)
+                            )
                         )
-                    )
-
-                    else -> renderState(
-                        MoviesState.Content(movieList)
-                    )
+        
+                        else -> renderState(
+                            MoviesState.Content(movieList)
+                        )
+                    }
                 }
-            }
+    
+            })
         }
     }
-
 }

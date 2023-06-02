@@ -1,7 +1,8 @@
 package com.example.imdb_api.di
 
+import com.example.imdb_api.presentation.cast.CastViewModel
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
-import com.example.imdb_api.presentation.poster.PosterView
+import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.presentation.poster.PosterViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -13,7 +14,17 @@ val viewModelModule = module {
         MoviesSearchViewModel(androidContext() as MoviesApplication, get())
     }
     
-    viewModel {(view: PosterView, url: String) ->
-        PosterViewModel(view, url)
+    viewModel {(movieId: String) ->
+        DetailsViewModel(movieId, get())
     }
+    
+    viewModel {(posterUrl: String) ->
+        PosterViewModel(posterUrl)
+    }
+    
+    viewModel {(movieId: String) ->
+        CastViewModel(movieId, get())
+    }
+    
 }
+    

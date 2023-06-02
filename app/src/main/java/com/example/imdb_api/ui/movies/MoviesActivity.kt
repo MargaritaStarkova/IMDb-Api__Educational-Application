@@ -18,7 +18,7 @@ import com.example.imdb_api.R
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
 import com.example.imdb_api.ui.models.MoviesState
-import com.example.imdb_api.ui.poster.PosterActivity
+import com.example.imdb_api.ui.poster.DetailsActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesActivity : AppCompatActivity() {
@@ -40,8 +40,9 @@ class MoviesActivity : AppCompatActivity() {
         object : MoviesAdapter.MovieClickListener {
             override fun onMovieClick(movie: Movie) {
                 if (clickDebounce()) {
-                    val intent = Intent(this@MoviesActivity, PosterActivity::class.java)
+                    val intent = Intent(this@MoviesActivity, DetailsActivity::class.java)
                     intent.putExtra("poster", movie.image)
+                    intent.putExtra("id", movie.id)
                     startActivity(intent)
                 }
             }

@@ -3,12 +3,13 @@ package com.example.imdb_api.domain.api
 import com.example.imdb_api.domain.models.Movie
 
 interface MoviesInteractor {
-    fun getMovies(expression: String, consumer: MoviesConsumer)
-
+    fun getDataFromApi(expression: String, consumer: Consumer)
+    
     fun addMovieToFavorites(movie: Movie)
+    
     fun removeMovieFromFavorites(movie: Movie)
-
-    fun interface MoviesConsumer {
-        fun consume(foundMovies: List<Movie>?, errorMessage: String?)
+    
+    interface Consumer {
+        fun <T> consume(data: T?, errorMessage: String?)
     }
 }

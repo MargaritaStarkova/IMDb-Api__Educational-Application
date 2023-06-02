@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
     single<IMDbApiService> {
-        val imdbBaseUrl = "https://imdb-api.com"
+        val imdbBaseUrl = "http://imdb-api.com"
         
         val logging = HttpLoggingInterceptor().apply {
             setLevel(HttpLoggingInterceptor.Level.BODY)

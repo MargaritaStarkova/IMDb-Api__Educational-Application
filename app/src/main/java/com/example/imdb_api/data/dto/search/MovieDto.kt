@@ -1,4 +1,4 @@
-package com.example.imdb_api.data.dto
+package com.example.imdb_api.data.dto.search
 
 data class MovieDto(
     val id: String,
