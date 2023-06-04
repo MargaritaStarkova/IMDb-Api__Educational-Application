@@ -1,49 +1,65 @@
-package com.example.imdb_api.ui.poster.fragments
+package com.example.imdb_api.ui.details
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.imdb_api.databinding.DetailsFragmentBinding
+import androidx.fragment.app.commit
+import com.example.imdb_api.R
+import com.example.imdb_api.databinding.FragmentItemDetailsBinding
 import com.example.imdb_api.domain.models.MovieDetails
 import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.ui.models.DetailsState
-import com.example.imdb_api.ui.movie_cast.MoviesCastActivity
+import com.example.imdb_api.ui.movie_cast.MovieCastFragment
+import com.example.imdb_api.ui.movie_cast.MovieCastFragment.Companion.CAST_TAG
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class DetailsFragment : Fragment() {
-    
-
+class DetailsItemFragment : Fragment() {
     
     private val detailsViewModel: DetailsViewModel by viewModel {
         parametersOf(requireArguments().getString(MOVIE_ID))
     }
     
-    private lateinit var binding: DetailsFragmentBinding
+    private val binding by lazy(LazyThreadSafetyMode.NONE) {
+        FragmentItemDetailsBinding.inflate(
+            layoutInflater
+        )
+    }
     
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        binding = DetailsFragmentBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         return binding.root
     }
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        detailsViewModel.observeState().observe(viewLifecycleOwner) { state ->
-            when(state) {
-                is DetailsState.Content -> showDetails(state.movie)
-                is DetailsState.Error -> showErrorMessage(state.message)
+        detailsViewModel
+            .observeState()
+            .observe(viewLifecycleOwner) { state ->
+                when (state) {
+                    is DetailsState.Content -> showDetails(state.movie)
+                    is DetailsState.Error -> showErrorMessage(state.message)
+                }
             }
-        }
         
         binding.showCastBtn.setOnClickListener {
-            val intent = Intent(context, MoviesCastActivity::class.java)
-            intent.putExtra(MOVIE_ID, requireArguments().getString(MOVIE_ID))
-            startActivity(intent)
+            parentFragmentManager.commit {
+                replace(
+                    R.id.rootFragmentContainerView,
+                    MovieCastFragment.newInstance(
+                        requireArguments()
+                            .getString(MOVIE_ID)
+                            .orEmpty()
+                    ),
+                    CAST_TAG
+                )
+                addToBackStack(null)
+            }
         }
     }
     
@@ -74,12 +90,12 @@ class DetailsFragment : Fragment() {
 
 
 companion object {
-        const val MOVIE_ID = "MOVIE_ID"
-        
-        fun newInstance(id: String) = DetailsFragment().apply {
-            arguments = Bundle().apply {
-                putString(MOVIE_ID, id)
-            }
+    const val MOVIE_ID = "MOVIE_ID"
+    
+    fun newInstance(id: String) = DetailsItemFragment().apply {
+        arguments = Bundle().apply {
+            putString(MOVIE_ID, id)
         }
     }
+}
 }

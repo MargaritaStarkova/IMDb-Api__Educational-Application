@@ -1,11 +1,9 @@
-package com.example.imdb_api.ui.poster
+package com.example.imdb_api.ui.details
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.imdb_api.ui.poster.fragments.DetailsFragment
-import com.example.imdb_api.ui.poster.fragments.PosterFragment
 
 class DetailsViewPagerAdapter(
     fragmentManager: FragmentManager,
@@ -20,8 +18,8 @@ class DetailsViewPagerAdapter(
     
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> PosterFragment.newInstance(posterUrl)
-            else -> DetailsFragment.newInstance(movieId)
+            0 -> PosterItemFragment.newInstance(posterUrl)
+            else -> DetailsItemFragment.newInstance(movieId)
         }
     }
 }
