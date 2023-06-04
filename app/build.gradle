@@ -70,4 +70,10 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.5.7'
     //ViewPager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
+    //AdapterDelegates
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl:4.3.2'
+    //module for ViewBinding
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2'
+
 }

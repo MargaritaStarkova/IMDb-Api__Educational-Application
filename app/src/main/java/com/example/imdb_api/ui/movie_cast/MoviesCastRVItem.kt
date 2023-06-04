@@ -1,8 +1,9 @@
 package com.example.imdb_api.ui.movie_cast
 
 import com.example.imdb_api.domain.models.MovieCastPerson
+import com.example.imdb_api.ui.RVItem
 
-sealed interface MoviesCastRVItem {
+sealed interface MoviesCastRVItem: RVItem {
     
     data class HeaderItem(
         val headerText: String,

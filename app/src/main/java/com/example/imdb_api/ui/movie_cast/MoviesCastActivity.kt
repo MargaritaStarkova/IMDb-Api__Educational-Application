@@ -10,6 +10,7 @@ import com.example.imdb_api.domain.models.MovieCast
 import com.example.imdb_api.presentation.cast.CastViewModel
 import com.example.imdb_api.ui.models.CastState
 import com.example.imdb_api.ui.poster.fragments.DetailsFragment
+import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -20,7 +21,10 @@ class MoviesCastActivity : AppCompatActivity() {
     private val viewModel: CastViewModel by viewModel {
         parametersOf(intent.getStringExtra(DetailsFragment.MOVIE_ID) ?: "")
     }
-    private val adapter = MoviesCastAdapter()
+    private val adapter = ListDelegationAdapter(
+        movieCastHeaderDelegate(),
+        movieCastPersonDelegate()
+    )
     
     
 
