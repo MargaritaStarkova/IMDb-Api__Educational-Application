@@ -8,20 +8,21 @@ import com.example.imdb_api.domain.models.MovieCastPerson
 
 class MovieCastViewHolder(private val binding: ListItemCastBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(movieCastPerson: MovieCastPerson) {
-        if (movieCastPerson.image == null) {
+    
+    fun bind(item: MoviesCastRVItem.PersonItem) {
+        if (item.data.image == null) {
             binding.imageView.isVisible = false
         } else {
             Glide
                 .with(itemView)
-                .load(movieCastPerson.image)
+                .load(item.data.image)
                 .into(binding.imageView)
             
             binding.imageView.isVisible = true
         }
         
-        binding.nameText.text = movieCastPerson.name
-        binding.descriptionText.text = movieCastPerson.description
+        binding.nameText.text = item.data.name
+        binding.descriptionText.text = item.data.description
         
     }
 }

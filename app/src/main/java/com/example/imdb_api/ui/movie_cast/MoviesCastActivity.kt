@@ -36,7 +36,7 @@ class MoviesCastActivity : AppCompatActivity() {
             .observeState()
             .observe(this) { state ->
                 when (state) {
-                    is CastState.Content -> showCast(state.movie)
+                    is CastState.Content -> showCast(state)
                     is CastState.Error -> showErrorMessage(state.message)
                     CastState.Loading -> showLoading()
                 }
@@ -51,14 +51,14 @@ class MoviesCastActivity : AppCompatActivity() {
         }
     }
     
-    private fun showCast(movie: MovieCast) {
+    private fun showCast(state: CastState.Content) {
         binding.apply {
             progressBar.visibility = View.GONE
             errorMessageTextView.visibility = View.GONE
             contentContainer.visibility = View.VISIBLE
             
-            movieTitle.text = movie.fullTitle
-            adapter.persons = movie.directors + movie.writers + movie.actors + movie.others
+            movieTitle.text = state.fullTitle
+            adapter.items = state.items
             adapter.notifyDataSetChanged()
             
         }
