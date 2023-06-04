@@ -1,21 +1,25 @@
 package com.example.imdb_api.data
 
+import com.example.imdb_api.data.converts.MovieCastConverter
 import com.example.imdb_api.data.dto.cast.MovieCastRequest
-import com.example.imdb_api.data.dto.cast.MovieCastResponse
+import com.example.imdb_api.data.dto.cast.MoviesFullCastResponse
 import com.example.imdb_api.data.dto.details.MovieDetailsRequest
+import com.example.imdb_api.data.dto.details.MovieDetailsResponse
 import com.example.imdb_api.data.dto.search.MoviesSearchRequest
 import com.example.imdb_api.data.dto.search.MoviesSearchResponse
 import com.example.imdb_api.data.storage.LocalStorage
 import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
-import com.example.imdb_api.data.dto.details.MovieDetailsResponse
+import com.example.imdb_api.domain.models.MovieCast
+import com.example.imdb_api.domain.models.MovieCastPerson
 import com.example.imdb_api.domain.models.MovieDetails
 import com.example.imdb_api.util.Resource
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
     private val localStorage: LocalStorage,
-    ) : MoviesRepository {
+    private val movieCastConverter: MovieCastConverter,
+) : MoviesRepository {
 
     override fun searchMovies(expression: String): Resource<List<Movie>> {
 
@@ -76,19 +80,21 @@ class MoviesRepositoryImpl(
         }
     }
     
-    override fun searchMovieCast(movieId: String): Resource<MovieCastResponse> {
+    override fun searchMovieCast(movieId: String): Resource<MovieCast> {
         val response = networkClient.doRequest(MovieCastRequest(movieId))
         return when (response.resultCode) {
             -1 -> Resource.Error("Проверьте подключение к интернету")
             200 -> {
-                val result = (response as MovieCastResponse)
-            
+                val result = (response as MoviesFullCastResponse)
+                
                 if (result == null) {
                     Resource.Error("Ничего не нашлось", null)
-                
+                    
                 } else {
-                    with(response) {
-                        Resource.Success(response) }
+                    Resource.Success(
+                        data = movieCastConverter.convert(response)
+                    )
+
                 }
             }
             else -> Resource.Error("Ошибка сервера", null)

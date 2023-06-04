@@ -12,6 +12,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.imdb_api.R
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.Movie
+import com.example.imdb_api.domain.models.SearchType
 import com.example.imdb_api.ui.models.MoviesState
 import com.example.imdb_api.ui.models.SingleLiveEvent
 
@@ -110,7 +111,10 @@ class MoviesSearchViewModel
 
             renderState(MoviesState.Loading)
 
-            moviesInteractor.getDataFromApi(newSearchText, object : MoviesInteractor.Consumer {
+            moviesInteractor.getDataFromApi(
+                expression = newSearchText,
+                type = SearchType.MOVIES,
+                consumer = object :MoviesInteractor.Consumer {
                 override fun <T> consume(data: T?, errorMessage: String?) {
                     if (data != null) {
                         movieList.clear()

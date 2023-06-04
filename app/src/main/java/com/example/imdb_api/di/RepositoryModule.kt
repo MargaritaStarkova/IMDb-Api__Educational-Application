@@ -8,6 +8,9 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
     single<MoviesRepository> {
-        MoviesRepositoryImpl(get(), get())
+        MoviesRepositoryImpl(
+            networkClient = get(),
+            localStorage = get(),
+            movieCastConverter = get())
     }
 }

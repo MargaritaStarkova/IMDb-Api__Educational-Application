@@ -3,6 +3,7 @@ package com.example.imdb_api.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.imdb_api.data.NetworkClient
+import com.example.imdb_api.data.converts.MovieCastConverter
 import com.example.imdb_api.data.network.IMDbApiService
 import com.example.imdb_api.data.network.RetrofitNetworkClient
 import com.example.imdb_api.data.storage.LocalStorage
@@ -43,5 +44,9 @@ val dataModule = module {
     
     single<NetworkClient> {
         RetrofitNetworkClient(get(), androidContext())
+    }
+    
+    single<MovieCastConverter> {
+        MovieCastConverter()
     }
 }

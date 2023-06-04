@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.MovieDetails
+import com.example.imdb_api.domain.models.SearchType
 import com.example.imdb_api.ui.models.DetailsState
 
 class DetailsViewModel(
@@ -16,7 +17,10 @@ class DetailsViewModel(
     fun observeState(): LiveData<DetailsState> = stateLiveData
     
     init {
-        moviesInteractor.getDataFromApi(movieId, object : MoviesInteractor.Consumer {
+        moviesInteractor.getDataFromApi(
+            expression = movieId,
+            type = SearchType.DETAILS,
+            consumer = object :MoviesInteractor.Consumer {
             override fun <T> consume(data: T?, errorMessage: String?) {
                 if (data != null) {
                     stateLiveData.postValue(DetailsState.Content(data as MovieDetails))
@@ -24,7 +28,6 @@ class DetailsViewModel(
                     stateLiveData.postValue(DetailsState.Error(errorMessage ?: "Unknown error"))
                 }
             }
-            
         })
     }
 }

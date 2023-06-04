@@ -15,4 +15,7 @@
     <string name="cast">В ролях:</string>
     <string name="plot">Сюжет:</string>
     <string name="show_cast">show cast</string>
+    <string name="directors">Directors</string>
+    <string name="writers">Writers</string>
+    <string name="actors">Actors</string>
 </resources>
