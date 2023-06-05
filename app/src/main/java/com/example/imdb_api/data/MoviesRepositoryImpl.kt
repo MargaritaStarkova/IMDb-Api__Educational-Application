@@ -11,9 +11,8 @@ import com.example.imdb_api.data.storage.LocalStorage
 import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.domain.models.MovieCast
-import com.example.imdb_api.domain.models.MovieCastPerson
 import com.example.imdb_api.domain.models.MovieDetails
-import com.example.imdb_api.util.Resource
+import com.example.imdb_api.core.util.Resource
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,

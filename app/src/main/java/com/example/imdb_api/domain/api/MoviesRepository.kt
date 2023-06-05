@@ -3,7 +3,7 @@ package com.example.imdb_api.domain.api
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.domain.models.MovieCast
 import com.example.imdb_api.domain.models.MovieDetails
-import com.example.imdb_api.util.Resource
+import com.example.imdb_api.core.util.Resource
 
 interface MoviesRepository {
     fun searchMovies(expression: String): Resource<List<Movie>>

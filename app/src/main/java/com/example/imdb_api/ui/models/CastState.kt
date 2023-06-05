@@ -1,9 +1,6 @@
 package com.example.imdb_api.ui.models
 
-import com.example.imdb_api.data.dto.cast.MoviesFullCastResponse
-import com.example.imdb_api.domain.models.MovieCast
-import com.example.imdb_api.ui.RVItem
-import com.example.imdb_api.ui.movie_cast.MoviesCastRVItem
+import com.example.imdb_api.core.root.RVItem
 
 sealed interface CastState {
     

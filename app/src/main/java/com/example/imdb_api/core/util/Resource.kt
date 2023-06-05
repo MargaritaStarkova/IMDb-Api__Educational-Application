@@ -1,4 +1,4 @@
-package com.example.imdb_api.util
+package com.example.imdb_api.core.util
 
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T): Resource<T>(data)

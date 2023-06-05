@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import com.example.imdb_api.R
+import com.example.imdb_api.core.navigation.api.IRouter
 import com.example.imdb_api.databinding.FragmentItemDetailsBinding
 import com.example.imdb_api.domain.models.MovieDetails
 import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.ui.models.DetailsState
 import com.example.imdb_api.ui.movie_cast.MovieCastFragment
-import com.example.imdb_api.ui.movie_cast.MovieCastFragment.Companion.CAST_TAG
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -27,6 +26,8 @@ class DetailsItemFragment : Fragment() {
             layoutInflater
         )
     }
+    
+    private val router: IRouter by inject()
     
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +49,7 @@ class DetailsItemFragment : Fragment() {
             }
         
         binding.showCastBtn.setOnClickListener {
-            parentFragmentManager.commit {
+/*             parentFragmentManager.commit {
                 replace(
                     R.id.rootFragmentContainerView,
                     MovieCastFragment.newInstance(
@@ -59,7 +60,16 @@ class DetailsItemFragment : Fragment() {
                     CAST_TAG
                 )
                 addToBackStack(null)
-            }
+            } */
+    
+            // Переходим на следующий экран с помощью Router
+            router.openFragment(
+                MovieCastFragment.newInstance(
+                    movieId = requireArguments()
+                        .getString(MOVIE_ID)
+                        .orEmpty()
+                )
+            )
         }
     }
     

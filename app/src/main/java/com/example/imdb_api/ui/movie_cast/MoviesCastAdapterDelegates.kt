@@ -4,7 +4,7 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.imdb_api.databinding.ListItemCastBinding
 import com.example.imdb_api.databinding.ListItemHeaderBinding
-import com.example.imdb_api.ui.RVItem
+import com.example.imdb_api.core.root.RVItem
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 
 // Делегат для заголовков на экране состава участников

@@ -7,7 +7,7 @@ import com.example.imdb_api.domain.models.SearchType
 import com.example.imdb_api.domain.models.SearchType.CAST
 import com.example.imdb_api.domain.models.SearchType.DETAILS
 import com.example.imdb_api.domain.models.SearchType.MOVIES
-import com.example.imdb_api.util.Resource
+import com.example.imdb_api.core.util.Resource
 import java.util.concurrent.Executors
 
 class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInteractor {
