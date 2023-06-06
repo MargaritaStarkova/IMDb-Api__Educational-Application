@@ -17,6 +17,7 @@ class RootActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 add<MoviesFragment>(R.id.rootFragmentContainerView)
+                setReorderingAllowed(true)
             }
         }
     }

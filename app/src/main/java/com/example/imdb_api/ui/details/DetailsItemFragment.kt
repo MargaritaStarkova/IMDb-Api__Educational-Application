@@ -48,17 +48,16 @@ class DetailsItemFragment : Fragment() {
             }
         
         binding.showCastBtn.setOnClickListener {
-            parentFragmentManager.commit {
+            parentFragment?.parentFragmentManager?.commit {
                 replace(
-                    R.id.rootFragmentContainerView,
-                    MovieCastFragment.newInstance(
+                    R.id.rootFragmentContainerView, MovieCastFragment.newInstance(
                         requireArguments()
                             .getString(MOVIE_ID)
                             .orEmpty()
-                    ),
-                    CAST_TAG
+                    ), CAST_TAG
                 )
-                addToBackStack(null)
+                addToBackStack(CAST_TAG)
+                setReorderingAllowed(true)
             }
         }
     }

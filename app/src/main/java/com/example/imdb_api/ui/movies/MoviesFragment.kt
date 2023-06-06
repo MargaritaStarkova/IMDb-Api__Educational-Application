@@ -55,7 +55,8 @@ class MoviesFragment : Fragment() {
                         DetailsRootFragment.newInstance(movie.image, movie.id),
                         DetailsRootFragment.TAG)
 
-                    addToBackStack(null)
+                    addToBackStack(DetailsRootFragment.TAG)
+                    setReorderingAllowed(true)
                 }
             }
         }
