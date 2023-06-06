@@ -43,7 +43,7 @@ class DetailsRootFragment : Fragment() {
         val movieId = arguments?.getString(MOVIE_ID) ?: ""
         
         binding.viewPager.adapter =
-            DetailsViewPagerAdapter(parentFragmentManager, lifecycle, poster, movieId)
+            DetailsViewPagerAdapter(childFragmentManager, lifecycle, poster, movieId)
         
         tabMediator.attach()
         

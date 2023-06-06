@@ -14,6 +14,7 @@ class Navigator(
         fragmentManager.commit {
             replace(fragmentContainerViewId, fragment)
             addToBackStack(null)
+            setReorderingAllowed(true)
         }
     }
 }
