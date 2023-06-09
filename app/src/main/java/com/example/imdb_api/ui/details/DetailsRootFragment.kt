@@ -56,14 +56,11 @@ class DetailsRootFragment : Fragment() {
     
     companion object {
         
-        const val TAG = "DetailsFragment"
         private const val POSTER_URL = "POSTER_URL"
         private const val MOVIE_ID = "MOVIE_ID"
         
-        fun newInstance(posterUrl: String, movieId: String) = DetailsRootFragment().apply {
-            arguments = bundleOf(
-                POSTER_URL to posterUrl, MOVIE_ID to movieId
-            )
-        }
+        fun createArgs(url: String, id: String): Bundle = bundleOf(
+            POSTER_URL to url, MOVIE_ID to id
+        )
     }
 }

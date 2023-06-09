@@ -5,13 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.imdb_api.core.navigation.api.IRouter
+import androidx.navigation.fragment.findNavController
+import com.example.imdb_api.R
 import com.example.imdb_api.databinding.FragmentItemDetailsBinding
 import com.example.imdb_api.domain.models.MovieDetails
 import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.ui.models.DetailsState
 import com.example.imdb_api.ui.movie_cast.MovieCastFragment
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -26,9 +26,7 @@ class DetailsItemFragment : Fragment() {
             layoutInflater
         )
     }
-    
-    private val router: IRouter by inject()
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -49,26 +47,10 @@ class DetailsItemFragment : Fragment() {
             }
         
         binding.showCastBtn.setOnClickListener {
-/*             parentFragmentManager.commit {
-                replace(
-                    R.id.rootFragmentContainerView,
-                    MovieCastFragment.newInstance(
-                        requireArguments()
-                            .getString(MOVIE_ID)
-                            .orEmpty()
-                    ),
-                    CAST_TAG
-                )
-                addToBackStack(null)
-            } */
-    
-            // Переходим на следующий экран с помощью Router
-            router.openFragment(
-                MovieCastFragment.newInstance(
-                    movieId = requireArguments()
-                        .getString(MOVIE_ID)
-                        .orEmpty()
-                )
+            
+            findNavController().navigate(
+                R.id.action_detailsRootFragment_to_movieCastFragment,
+                MovieCastFragment.createArgs(requireArguments().getString(MOVIE_ID).orEmpty())
             )
         }
     }

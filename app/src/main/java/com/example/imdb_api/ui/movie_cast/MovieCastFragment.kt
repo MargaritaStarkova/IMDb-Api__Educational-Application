@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.imdb_api.databinding.FragmentMoviesCastBinding
@@ -87,14 +88,11 @@ class MovieCastFragment : Fragment() {
     }
     
     companion object {
-        
-        const val CAST_TAG = "MovieCastFragment"
-        
-        fun newInstance(movieId: String) = MovieCastFragment().apply {
-            arguments = Bundle().apply {
-                putString(DetailsItemFragment.MOVIE_ID, movieId)
-            }
-        
-        }
+    
+        private const val MOVIE_ID = "MOVIE_ID"
+    
+        fun createArgs(id: String): Bundle = bundleOf(
+            MOVIE_ID to id
+        )
     }
 }

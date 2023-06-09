@@ -12,7 +12,7 @@ class MoviesApplication : Application() {
         
         GlobalContext.startKoin {
             androidContext(this@MoviesApplication)
-            modules(dataModule, repositoryModule, interactorModule, viewModelModule, navigationModule)
+            modules(dataModule, repositoryModule, interactorModule, viewModelModule)
         }
     }
 }

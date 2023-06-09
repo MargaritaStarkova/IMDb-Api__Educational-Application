@@ -1,6 +1,5 @@
 package com.example.imdb_api.ui.movies
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,29 +10,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.imdb_api.R
-import com.example.imdb_api.core.navigation.api.IRouter
 import com.example.imdb_api.databinding.FragmentMoviesBinding
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
-import com.example.imdb_api.ui.models.MoviesState
 import com.example.imdb_api.ui.details.DetailsRootFragment
-import org.koin.android.ext.android.inject
+import com.example.imdb_api.ui.models.MoviesState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoviesFragment : Fragment() {
-    
-    // private val binding = FragmentMoviesBinding.inflate(layoutInflater)
-    //private lateinit var binding: FragmentMoviesBinding
     
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
         FragmentMoviesBinding.inflate(layoutInflater)
     }
     private val viewModel by viewModel<MoviesSearchViewModel>()
-    
-    private val router: IRouter by inject()
     
     private var textWatcher: TextWatcher? = null
     
@@ -43,33 +35,13 @@ class MoviesFragment : Fragment() {
     private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
         override fun onMovieClick(movie: Movie) {
             if (clickDebounce()) {
-/*                 val intent = Intent(requireContext(), DetailsRootFragment::class.java)
-                intent.putExtra("poster", movie.image)
-                intent.putExtra("id", movie.id)
-                startActivity(intent) */
-    
-/*                 activity?.supportFragmentManager?.commit {
-                    replace(R.id.rootFragmentContainerView, DetailsRootFragment.newInstance(movie.image, movie.id))
-                    addToBackStack(null)
-    
-                } */
-                
-/*                 parentFragmentManager.commit {
-                    replace(
-                        R.id.rootFragmentContainerView,
-                        DetailsRootFragment.newInstance(movie.image, movie.id),
-                        DetailsRootFragment.TAG)
-
-                    addToBackStack(null)
-                } */
-    
-                // Переходим на следующий экран с помощью Router
-                router.openFragment(
-                    DetailsRootFragment.newInstance(
-                        movieId = movie.id,
-                        posterUrl = movie.image
+                findNavController().navigate(
+                    R.id.action_moviesFragment_to_detailsRootFragment,
+                    DetailsRootFragment.createArgs(
+                        url = movie.image, id = movie.id
                     )
                 )
+    
             }
         }
         
@@ -85,7 +57,6 @@ class MoviesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        //binding = FragmentMoviesBinding.inflate(inflater, container, false)
         return binding.root
     }
     
