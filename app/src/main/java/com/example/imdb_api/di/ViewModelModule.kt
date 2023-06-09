@@ -7,6 +7,8 @@ import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.presentation.poster.PosterViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val viewModelModule = module {
