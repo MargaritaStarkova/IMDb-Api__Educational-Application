@@ -1,13 +1,14 @@
 package com.example.imdb_api.domain.impl
 
+import com.example.imdb_api.core.util.Resource
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.domain.models.SearchType
+import com.example.imdb_api.domain.models.SearchType.PERSONS
 import com.example.imdb_api.domain.models.SearchType.CAST
 import com.example.imdb_api.domain.models.SearchType.DETAILS
 import com.example.imdb_api.domain.models.SearchType.MOVIES
-import com.example.imdb_api.core.util.Resource
 import java.util.concurrent.Executors
 
 class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInteractor {
@@ -50,10 +51,20 @@ class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInt
                         is Resource.Success -> {
                             consumer.consume(resource.data, null)
                         }
-            
+        
                         is Resource.Error -> {
                             consumer.consume(null, resource.message)
                         }
+                    }
+                }
+    
+                PERSONS -> when (val resource = repository.searchPersons(expression)) {
+                    is Resource.Success -> {
+                        consumer.consume(resource.data, null)
+                    }
+        
+                    is Resource.Error -> {
+                        consumer.consume(null, resource.message)
                     }
                 }
             }

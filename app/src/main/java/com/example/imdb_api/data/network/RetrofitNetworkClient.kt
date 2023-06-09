@@ -8,6 +8,7 @@ import com.example.imdb_api.data.dto.cast.MovieCastRequest
 import com.example.imdb_api.data.dto.details.MovieDetailsRequest
 import com.example.imdb_api.data.dto.search.MoviesSearchRequest
 import com.example.imdb_api.data.dto.Response
+import com.example.imdb_api.data.dto.persons.PersonsSearchRequest
 
 class RetrofitNetworkClient(
     private val imdbService: IMDbApiService,
@@ -24,6 +25,7 @@ class RetrofitNetworkClient(
             is MoviesSearchRequest -> imdbService.findMovies(dto.expression).execute()
             is MovieDetailsRequest -> imdbService.getMovieDetails(dto.movieId).execute()
             is MovieCastRequest -> imdbService.getMovieCast(dto.movieId).execute()
+            is PersonsSearchRequest -> imdbService.findPersons(dto.expression).execute()
             else -> return Response().apply { resultCode = 400 }
         }
         

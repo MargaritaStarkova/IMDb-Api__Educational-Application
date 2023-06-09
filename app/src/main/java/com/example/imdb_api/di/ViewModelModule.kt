@@ -2,6 +2,7 @@ package com.example.imdb_api.di
 
 import com.example.imdb_api.presentation.cast.CastViewModel
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
+import com.example.imdb_api.presentation.persons.PersonsViewModel
 import com.example.imdb_api.presentation.poster.DetailsViewModel
 import com.example.imdb_api.presentation.poster.PosterViewModel
 import org.koin.android.ext.koin.androidContext
@@ -25,6 +26,8 @@ val viewModelModule = module {
     viewModel {(movieId: String) ->
         CastViewModel(movieId, get())
     }
-    
+    viewModel {
+        PersonsViewModel(androidContext() as MoviesApplication, get())
+    }
 }
     

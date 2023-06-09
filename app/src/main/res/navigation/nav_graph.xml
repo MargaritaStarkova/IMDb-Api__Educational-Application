@@ -36,4 +36,14 @@
         android:name="com.example.imdb_api.ui.movie_cast.MovieCastFragment"
         android:label="fragment_movies_cast"
         tools:layout="@layout/fragment_movies_cast" />
+    <fragment
+        android:id="@+id/personsFragment"
+        android:name="com.example.imdb_api.ui.persons.PersonsFragment"
+        android:label="fragment_persons"
+        tools:layout="@layout/fragment_persons" />
+    <fragment
+        android:id="@+id/infoFragment"
+        android:name="com.example.imdb_api.ui.info.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" />
 </navigation>

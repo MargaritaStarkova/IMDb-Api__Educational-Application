@@ -1,4 +1,4 @@
-package com.example.imdb_api.ui.models
+package com.example.imdb_api.core.util
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData

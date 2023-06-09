@@ -9,25 +9,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.example.imdb_api.R
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.domain.models.SearchType
 import com.example.imdb_api.ui.models.MoviesState
-import com.example.imdb_api.ui.models.SingleLiveEvent
+import com.example.imdb_api.core.util.SingleLiveEvent
+import com.example.imdb_api.di.MoviesApplication
 
 class MoviesSearchViewModel
     (
-    application: Application,
+    application: MoviesApplication,
     private val moviesInteractor: MoviesInteractor,
 ) : AndroidViewModel(application) {
-
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-
-    }
-
+    
     private var latestSearchText: String? = null
     
     private val handler = Handler(Looper.getMainLooper())
@@ -144,5 +140,10 @@ class MoviesSearchViewModel
     
             })
         }
+    }
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private val SEARCH_REQUEST_TOKEN = Any()
+        
     }
 }

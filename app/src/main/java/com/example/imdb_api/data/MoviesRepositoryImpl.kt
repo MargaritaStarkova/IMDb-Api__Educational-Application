@@ -1,10 +1,13 @@
 package com.example.imdb_api.data
 
+import com.example.imdb_api.core.util.Resource
 import com.example.imdb_api.data.converts.MovieCastConverter
 import com.example.imdb_api.data.dto.cast.MovieCastRequest
 import com.example.imdb_api.data.dto.cast.MoviesFullCastResponse
 import com.example.imdb_api.data.dto.details.MovieDetailsRequest
 import com.example.imdb_api.data.dto.details.MovieDetailsResponse
+import com.example.imdb_api.data.dto.persons.PersonsSearchRequest
+import com.example.imdb_api.data.dto.persons.PersonsSearchResponse
 import com.example.imdb_api.data.dto.search.MoviesSearchRequest
 import com.example.imdb_api.data.dto.search.MoviesSearchResponse
 import com.example.imdb_api.data.storage.LocalStorage
@@ -12,7 +15,7 @@ import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.domain.models.MovieCast
 import com.example.imdb_api.domain.models.MovieDetails
-import com.example.imdb_api.core.util.Resource
+import com.example.imdb_api.domain.models.Person
 
 class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
@@ -39,22 +42,47 @@ class MoviesRepositoryImpl(
                             resultType = it.resultType,
                             image = it.image,
                             title = it.title,
-                            description = it.description,
-                            inFavorite = stored.contains(it.id)
+                            description = it.description, inFavorite = stored.contains(it.id)
                         )
-
+    
                     })
                 }
             }
-
+    
             else -> Resource.Error("Ошибка сервера", null)
         }
     }
-
+    
+    override fun searchPersons(expression: String): Resource<List<Person>> {
+        val response = networkClient.doRequest(PersonsSearchRequest(expression))
+        return when (response.resultCode) {
+            -1 -> Resource.Error("Проверьте подключение к интернету")
+            200 -> {
+                val resultList = (response as PersonsSearchResponse).results
+                
+                if (resultList.isNullOrEmpty()) {
+                    Resource.Error("Ничего не нашлось", null)
+                    
+                } else {
+                    Resource.Success(resultList.map {
+                        Person(
+                            name = it.title,
+                            image = it.image,
+                            description = it.description,
+                        )
+                        
+                    })
+                }
+            }
+            
+            else -> Resource.Error("Ошибка сервера", null)
+        }
+    }
+    
     override fun addMoviesToFavorites(movie: Movie) {
         localStorage.addToFavorites(movie.id)
     }
-
+    
     override fun removeMovieFromFavorites(movie: Movie) {
         localStorage.removeFromFavorites(movie.id)
     }
