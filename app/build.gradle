@@ -40,7 +40,7 @@ android {
 dependencies {
 
     //includes android.lifecycle
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
@@ -67,7 +67,7 @@ dependencies {
     //Koin: DI
     implementation 'io.insert-koin:koin-android:3.3.0'
     //fragments
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     //ViewPager2
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
@@ -77,8 +77,11 @@ dependencies {
     implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.2'
 
     //Jetpack Navigation Component
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
-    implementation 'androidx.fragment:fragment-ktx:1.5.6'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
+
+    //coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0'
 
 }

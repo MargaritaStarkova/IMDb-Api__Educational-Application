@@ -7,6 +7,7 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.imdb_api.R
 import com.example.imdb_api.core.util.SingleLiveEvent
 import com.example.imdb_api.di.MoviesApplication
@@ -14,6 +15,9 @@ import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.Person
 import com.example.imdb_api.domain.models.SearchType
 import com.example.imdb_api.ui.models.PersonsState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PersonsViewModel(
     application: MoviesApplication,
@@ -21,18 +25,14 @@ class PersonsViewModel(
 ) : AndroidViewModel(application) {
     
     private var latestSearchText: String? = null
-    
-    private val handler = Handler(Looper.getMainLooper())
+    private var searchJob: Job? = null
+
     private val personList = ArrayList<Person>()
     
     //Создаем LiveData
     private val stateLiveData = MutableLiveData<PersonsState>()
     private val showToast = SingleLiveEvent<String>()
     
-    override fun onCleared() {
-        super.onCleared()
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-    }
     
     fun observeState(): LiveData<PersonsState> = stateLiveData
     fun observeShowToast(): LiveData<String> = showToast
@@ -42,12 +42,13 @@ class PersonsViewModel(
         
         this.latestSearchText = changedText
         
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(changedText)
+        }
         
-        val searchRunnable = Runnable { searchRequest(changedText) }
-        
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, postTime)
+
     }
     
     private fun renderState(state: PersonsState) {
@@ -94,8 +95,6 @@ class PersonsViewModel(
     
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val SEARCH_REQUEST_TOKEN = Any()
-        
     }
     
 }

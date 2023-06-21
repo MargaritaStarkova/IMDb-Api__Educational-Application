@@ -31,5 +31,9 @@ class RootActivity : AppCompatActivity(R.layout.activity_root) {
             }
         }
     }
+    
+    fun animateBottomNavigationView() {
+        findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.GONE
+    }
 }
 

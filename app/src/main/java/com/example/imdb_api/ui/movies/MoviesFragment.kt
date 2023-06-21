@@ -1,8 +1,6 @@
 package com.example.imdb_api.ui.movies
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -10,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.imdb_api.R
+import com.example.imdb_api.core.root.RootActivity
+import com.example.imdb_api.core.util.debounce
 import com.example.imdb_api.databinding.FragmentMoviesBinding
 import com.example.imdb_api.domain.models.Movie
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
@@ -29,28 +30,9 @@ class MoviesFragment : Fragment() {
     
     private var textWatcher: TextWatcher? = null
     
-    private var isClickAllowed = true
-    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var onMovieClickDebounce: (Movie) -> Unit
     
-    private val adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
-        override fun onMovieClick(movie: Movie) {
-            if (clickDebounce()) {
-                findNavController().navigate(
-                    R.id.action_moviesFragment_to_detailsRootFragment,
-                    DetailsRootFragment.createArgs(
-                        url = movie.image, id = movie.id
-                    )
-                )
-    
-            }
-        }
-        
-        override fun onFavoriteToggleClick(movie: Movie) {
-            viewModel.toggleFavorite(movie)
-        }
-        
-    })
-    
+    private var adapter: MoviesAdapter? = null
     
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +44,18 @@ class MoviesFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    
+        adapter = MoviesAdapter(object : MoviesAdapter.MovieClickListener {
+            override fun onMovieClick(movie: Movie) {
+                (activity as RootActivity).animateBottomNavigationView()
+                onMovieClickDebounce(movie)
+            }
+        
+            override fun onFavoriteToggleClick(movie: Movie) {
+                viewModel.toggleFavorite(movie)
+            }
+        
+        })
         
         viewModel
             .observeState()
@@ -80,21 +74,35 @@ class MoviesFragment : Fragment() {
         
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            
+    
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 viewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
                 )
             }
-            
+    
             override fun afterTextChanged(s: Editable?) {}
         }
         textWatcher.let { binding.queryInput.addTextChangedListener(it) }
-        
+    
+        onMovieClickDebounce = debounce<Movie>(
+            delayMillis = CLICK_DEBOUNCE_DELAY,
+            coroutineScope = viewLifecycleOwner.lifecycleScope,
+            useLastParam = false
+        ) { movie ->
+            findNavController().navigate(
+                R.id.action_moviesFragment_to_detailsRootFragment, DetailsRootFragment.createArgs(
+                    url = movie.image, id = movie.id
+                )
+            )
+        }
     }
     
     override fun onDestroyView() {
         super.onDestroyView()
+    
+        adapter = null
+        binding.moviesList.adapter = null
         
         //удаляем listener
         textWatcher?.let { binding.queryInput.removeTextChangedListener(it) }
@@ -125,11 +133,11 @@ class MoviesFragment : Fragment() {
             moviesList.visibility = View.VISIBLE
             progressBar.visibility = View.GONE
         }
+    
+        adapter?.movies?.clear()
+        adapter?.movies?.addAll(movies)
         
-        adapter.movies.clear()
-        adapter.movies.addAll(movies)
-        
-        adapter.notifyDataSetChanged()
+        adapter?.notifyDataSetChanged()
     }
     
     private fun render(state: MoviesState) {
@@ -146,15 +154,6 @@ class MoviesFragment : Fragment() {
         Toast
             .makeText(requireContext(), text, Toast.LENGTH_LONG)
             .show()
-    }
-    
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
-        }
-        return current
     }
     
     companion object {
