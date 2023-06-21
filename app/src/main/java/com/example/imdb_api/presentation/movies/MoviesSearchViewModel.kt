@@ -110,7 +110,7 @@ class MoviesSearchViewModel
             moviesInteractor.getDataFromApi(
                 expression = newSearchText,
                 type = SearchType.MOVIES,
-                consumer = object :MoviesInteractor.Consumer {
+                consumer = object : MoviesInteractor.Consumer {
                 override fun <T> consume(data: T?, errorMessage: String?) {
                     if (data != null) {
                         movieList.clear()
