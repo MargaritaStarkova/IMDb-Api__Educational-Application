@@ -1,29 +1,25 @@
 package com.example.imdb_api.presentation.movies
 
 import android.app.Application
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.imdb_api.R
-import com.example.imdb_api.domain.api.MoviesInteractor
-import com.example.imdb_api.domain.models.Movie
-import com.example.imdb_api.domain.models.SearchType
-import com.example.imdb_api.ui.models.MoviesState
 import com.example.imdb_api.core.util.SingleLiveEvent
 import com.example.imdb_api.core.util.debounce
 import com.example.imdb_api.di.MoviesApplication
+import com.example.imdb_api.domain.api.MoviesInteractor
+import com.example.imdb_api.domain.models.Movie
+import com.example.imdb_api.domain.models.SearchRequest
+import com.example.imdb_api.ui.models.MoviesState
+import kotlinx.coroutines.launch
 
 class MoviesSearchViewModel
     (
     application: MoviesApplication,
-    private val moviesInteractor: MoviesInteractor,
+    private val interactor: MoviesInteractor,
 ) : AndroidViewModel(application) {
     
     private var latestSearchText: String? = null
@@ -72,9 +68,9 @@ class MoviesSearchViewModel
 
     fun toggleFavorite(movie: Movie) {
         if (movie.inFavorite) {
-            moviesInteractor.removeMovieFromFavorites(movie)
+            interactor.removeMovieFromFavorites(movie)
         } else {
-            moviesInteractor.addMovieToFavorites(movie)
+            interactor.addMovieToFavorites(movie)
         }
 
         updateMovieContent(movie.id, movie.copy(inFavorite = !movie.inFavorite))
@@ -103,43 +99,47 @@ class MoviesSearchViewModel
 
     private fun searchRequest(newSearchText: String) {
         if (newSearchText.isNotEmpty()) {
-
+    
             renderState(MoviesState.Loading)
-
-            moviesInteractor.getDataFromApi(
-                expression = newSearchText,
-                type = SearchType.MOVIES,
-                consumer = object : MoviesInteractor.Consumer {
-                override fun <T> consume(data: T?, errorMessage: String?) {
-                    if (data != null) {
-                        movieList.clear()
-                        movieList.addAll(data as List<Movie>)
+            viewModelScope.launch {
+                interactor
+                    .getDataFromApi<List<Movie>>(
+                        request = SearchRequest.MoviesSearchRequest(newSearchText)
+                    )
+                    .collect { pair ->
+                        processResult(pair.first, pair.second)
                     }
-    
-                    when {
-                        errorMessage != null -> {
-                            renderState(
-                                MoviesState.Error(getApplication<Application>().getString(R.string.something_went_wrong))
-                            )
-            
-                            showToast.postValue(errorMessage!!)
-                        }
-        
-                        movieList.isEmpty() -> renderState(
-                            MoviesState.Error(
-                                getApplication<Application>().getString(R.string.nothing_found)
-                            )
-                        )
-        
-                        else -> renderState(
-                            MoviesState.Content(movieList)
-                        )
-                    }
-                }
-    
-            })
+            }
         }
     }
+    
+    private fun processResult(data: List<Movie>?, errorMessage: String?) {
+        if (data != null) {
+            movieList.clear()
+            movieList.addAll(data)
+        }
+        
+        when {
+            errorMessage != null -> {
+                renderState(
+                    MoviesState.Error(getApplication<Application>().getString(R.string.something_went_wrong))
+                )
+                
+                showToast.postValue(errorMessage!!)
+            }
+            
+            movieList.isEmpty() -> renderState(
+                MoviesState.Error(
+                    getApplication<Application>().getString(R.string.nothing_found)
+                )
+            )
+            
+            else -> renderState(
+                MoviesState.Content(movieList)
+            )
+        }
+    }
+    
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         

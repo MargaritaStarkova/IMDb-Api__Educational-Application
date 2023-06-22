@@ -3,17 +3,17 @@ package com.example.imdb_api.presentation.cast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.imdb_api.data.dto.cast.MoviesFullCastResponse
+import androidx.lifecycle.viewModelScope
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.models.MovieCast
-import com.example.imdb_api.domain.models.SearchType
+import com.example.imdb_api.domain.models.SearchRequest
 import com.example.imdb_api.ui.models.CastState
-import com.example.imdb_api.ui.models.MoviesState
 import com.example.imdb_api.ui.movie_cast.MoviesCastRVItem
+import kotlinx.coroutines.launch
 
 class CastViewModel(
     movieId: String,
-    moviesInteractor: MoviesInteractor,
+    interactor: MoviesInteractor,
 ) : ViewModel() {
     
     private val stateLiveData = MutableLiveData<CastState>()
@@ -21,19 +21,21 @@ class CastViewModel(
     
     init {
         stateLiveData.value = CastState.Loading
-        moviesInteractor.getDataFromApi(
-            expression = movieId,
-            type = SearchType.CAST,
-            consumer = object : MoviesInteractor.Consumer {
-            override fun <T> consume(data: T?, errorMessage: String?) {
-                if (data != null) {
-                    stateLiveData.postValue(castToUiStateContent(data as MovieCast))
-                } else {
-                    stateLiveData.postValue(CastState.Error(errorMessage ?: "Unknown error"))
+        viewModelScope.launch {
+            interactor
+                .getDataFromApi<MovieCast>(request = SearchRequest.MovieCastRequest(movieId))
+                .collect { pair ->
+                    processResult(pair.first, pair.second)
                 }
-            }
-            
-        })
+        }
+    }
+    
+    private fun processResult(data: MovieCast?, errorMessage: String?) {
+        if (data != null) {
+            stateLiveData.postValue(castToUiStateContent(data))
+        } else {
+            stateLiveData.postValue(CastState.Error(errorMessage ?: "Unknown error"))
+        }
     }
     
     private fun castToUiStateContent(cast: MovieCast): CastState {

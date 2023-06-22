@@ -4,34 +4,37 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.example.imdb_api.data.NetworkClient
-import com.example.imdb_api.data.dto.cast.MovieCastRequest
-import com.example.imdb_api.data.dto.details.MovieDetailsRequest
-import com.example.imdb_api.data.dto.search.MoviesSearchRequest
 import com.example.imdb_api.data.dto.Response
-import com.example.imdb_api.data.dto.persons.PersonsSearchRequest
+import com.example.imdb_api.domain.models.SearchRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class RetrofitNetworkClient(
     private val imdbService: IMDbApiService,
     private val context: Context,
 ) : NetworkClient {
-
-    override fun doRequest(dto: Any): Response {
     
+    override suspend fun doRequest(dto: Any): Response {
+        
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
-        
-        val response = when(dto) {
-            is MoviesSearchRequest -> imdbService.findMovies(dto.expression).execute()
-            is MovieDetailsRequest -> imdbService.getMovieDetails(dto.movieId).execute()
-            is MovieCastRequest -> imdbService.getMovieCast(dto.movieId).execute()
-            is PersonsSearchRequest -> imdbService.findPersons(dto.expression).execute()
-            else -> return Response().apply { resultCode = 400 }
+        return withContext(Dispatchers.IO) {
+            
+            val response = when (dto) {
+                is SearchRequest.MoviesSearchRequest -> imdbService.findMovies(dto.expression)
+                is SearchRequest.MovieDetailsRequest -> imdbService.getMovieDetails(dto.expression)
+                is SearchRequest.MovieCastRequest -> imdbService.getMovieCast(dto.expression)
+                is SearchRequest.PersonsSearchRequest -> imdbService.findPersons(dto.expression)
+                else -> return@withContext Response().apply { resultCode = 400 }
+            }
+            
+            try {
+                return@withContext response.apply { resultCode = 200 }
+            } catch (e: Throwable) {
+                return@withContext Response().apply { resultCode = 500 }
+            }
         }
-        
-        val body = response.body()
-        return body?.apply { resultCode = response.code() } ?: Response().apply { resultCode = response.code() }
-    
     }
     
     private fun isConnected(): Boolean {

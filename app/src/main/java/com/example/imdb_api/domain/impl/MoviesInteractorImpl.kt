@@ -4,77 +4,36 @@ import com.example.imdb_api.core.util.Resource
 import com.example.imdb_api.domain.api.MoviesInteractor
 import com.example.imdb_api.domain.api.MoviesRepository
 import com.example.imdb_api.domain.models.Movie
-import com.example.imdb_api.domain.models.SearchType
-import com.example.imdb_api.domain.models.SearchType.PERSONS
-import com.example.imdb_api.domain.models.SearchType.CAST
-import com.example.imdb_api.domain.models.SearchType.DETAILS
-import com.example.imdb_api.domain.models.SearchType.MOVIES
-import java.util.concurrent.Executors
+import com.example.imdb_api.domain.models.MovieCast
+import com.example.imdb_api.domain.models.MovieDetails
+import com.example.imdb_api.domain.models.Person
+import com.example.imdb_api.domain.models.SearchRequest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MoviesInteractorImpl(private val repository: MoviesRepository) : MoviesInteractor {
-
-    private val executor = Executors.newCachedThreadPool()
     
-    override fun getDataFromApi(
-        expression: String,
-        type: SearchType,
-        consumer: MoviesInteractor.Consumer,
-    ) {
-        executor.execute {
-            
-            when (type) {
-                MOVIES -> {
-                    when (val resource = repository.searchMovies(expression)) {
-                        is Resource.Success -> {
-                            consumer.consume(resource.data, null)
-                        }
+    override fun <T> getDataFromApi(request: SearchRequest): Flow<Pair<T?, String?>> {
         
-                        is Resource.Error -> {
-                            consumer.consume(null, resource.message)
-                        }
-                    }
-                }
-                    DETAILS -> {
-                        when (val resource = repository.searchMovieDetails(expression)) {
-                            is Resource.Success -> {
-                                consumer.consume(resource.data, null)
-                            }
+        val result = when (request) {
+            is SearchRequest.MovieCastRequest -> repository.search<MovieCast>(request)
+            is SearchRequest.MovieDetailsRequest -> repository.search<MovieDetails>(request)
+            is SearchRequest.MoviesSearchRequest -> repository.search<List<Movie>>(request)
+            is SearchRequest.PersonsSearchRequest -> repository.search<List<Person>>(request)
+        }
         
-                            is Resource.Error -> {
-                                consumer.consume(null, resource.message)
-                            }
-                        }
-                    }
-    
-                CAST -> {
-                    when (val resource = repository.searchMovieCast(expression)) {
-                        is Resource.Success -> {
-                            consumer.consume(resource.data, null)
-                        }
-        
-                        is Resource.Error -> {
-                            consumer.consume(null, resource.message)
-                        }
-                    }
-                }
-    
-                PERSONS -> when (val resource = repository.searchPersons(expression)) {
-                    is Resource.Success -> {
-                        consumer.consume(resource.data, null)
-                    }
-        
-                    is Resource.Error -> {
-                        consumer.consume(null, resource.message)
-                    }
-                }
-            }
-            
+        return result.map { result ->
+            @Suppress("UNCHECKED_CAST") when (result) {
+                is Resource.Error -> Pair(null, result.message)
+                is Resource.Success -> Pair(result.data as T, null)
             }
         }
+    }
+    
     override fun addMovieToFavorites(movie: Movie) {
         repository.addMoviesToFavorites(movie)
     }
-
+    
     override fun removeMovieFromFavorites(movie: Movie) {
         repository.removeMovieFromFavorites(movie)
     }
