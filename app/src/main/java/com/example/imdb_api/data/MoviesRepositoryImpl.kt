@@ -2,8 +2,11 @@ package com.example.imdb_api.data
 
 import com.example.imdb_api.core.util.Resource
 import com.example.imdb_api.data.converts.MovieCastConverter
+import com.example.imdb_api.data.converts.MovieDbConvertor
+import com.example.imdb_api.data.db.AppDatabase
 import com.example.imdb_api.data.dto.cast.MoviesFullCastResponse
 import com.example.imdb_api.data.dto.details.MovieDetailsResponse
+import com.example.imdb_api.data.dto.movies.MovieDto
 import com.example.imdb_api.data.dto.movies.MoviesSearchResponse
 import com.example.imdb_api.data.dto.persons.PersonsSearchResponse
 import com.example.imdb_api.data.storage.LocalStorage
@@ -19,6 +22,8 @@ class MoviesRepositoryImpl(
     private val networkClient: NetworkClient,
     private val localStorage: LocalStorage,
     private val movieCastConverter: MovieCastConverter,
+    private val appDatabase: AppDatabase,
+    private val movieDbConvertor: MovieDbConvertor,
 ) : MoviesRepository {
     
     override fun addMoviesToFavorites(movie: Movie) {
@@ -81,7 +86,8 @@ class MoviesRepositoryImpl(
                             emit(Resource.Error("Ничего не нашлось", null))
                             
                         } else {
-                            @Suppress("UNCHECKED_CAST") emit(Resource.Success(resultList.map {
+                            
+                            val data = resultList.map {
                                 Movie(
                                     id = it.id,
                                     resultType = it.resultType,
@@ -90,8 +96,11 @@ class MoviesRepositoryImpl(
                                     description = it.description,
                                     inFavorite = stored.contains(it.id)
                                 )
-                                
-                            }) as Resource<T>)
+    
+                            }
+                            
+                            saveMovies(resultList)
+                            @Suppress("UNCHECKED_CAST") emit(Resource.Success(data = data) as Resource<T>)
                         }
                     }
                     
@@ -119,6 +128,11 @@ class MoviesRepositoryImpl(
             
             else -> emit(Resource.Error("Ошибка сервера", null))
         }
+    }
+    
+    private suspend fun saveMovies(movies: List<MovieDto>) {
+        val movieEntities = movies.map { movie -> movieDbConvertor.map(movie) }
+        appDatabase.movieDao().insertMovies(movieEntities)
     }
 }
 

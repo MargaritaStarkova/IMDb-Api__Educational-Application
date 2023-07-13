@@ -1,6 +1,7 @@
 package com.example.imdb_api.di
 
 import com.example.imdb_api.presentation.cast.CastViewModel
+import com.example.imdb_api.presentation.history.HistoryViewModel
 import com.example.imdb_api.presentation.movies.MoviesSearchViewModel
 import com.example.imdb_api.presentation.persons.PersonsViewModel
 import com.example.imdb_api.presentation.poster.DetailsViewModel
@@ -30,6 +31,10 @@ val viewModelModule = module {
     }
     viewModel {
         PersonsViewModel(androidContext() as MoviesApplication, get())
+    }
+    
+    viewModel {
+        HistoryViewModel(androidContext() as MoviesApplication, get())
     }
 }
     

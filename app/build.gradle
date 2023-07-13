@@ -84,4 +84,9 @@ dependencies {
     //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0'
 
+    //BD: Room
+    implementation 'androidx.room:room-runtime:2.5.2' // библоитека Room
+    kapt 'androidx.room:room-compiler:2.5.2' // Kotlin кодогенератор
+    implementation 'androidx.room:room-ktx:2.5.2' // поддержка корутин
+
 }

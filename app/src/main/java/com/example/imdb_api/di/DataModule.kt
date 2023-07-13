@@ -1,13 +1,14 @@
 package com.example.imdb_api.di
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.room.Room
 import com.example.imdb_api.data.NetworkClient
 import com.example.imdb_api.data.converts.MovieCastConverter
+import com.example.imdb_api.data.converts.MovieDbConvertor
+import com.example.imdb_api.data.db.AppDatabase
 import com.example.imdb_api.data.network.IMDbApiService
 import com.example.imdb_api.data.network.RetrofitNetworkClient
 import com.example.imdb_api.data.storage.LocalStorage
-import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
@@ -27,16 +28,20 @@ val dataModule = module {
         Retrofit.Builder()
                 .baseUrl(imdbBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build()
-                .create(IMDbApiService::class.java)
+            .client(okHttpClient)
+            .build()
+            .create(IMDbApiService::class.java)
     }
     
     single {
-        androidContext()
-                .getSharedPreferences("local_storage", Context.MODE_PRIVATE )
+        androidContext().getSharedPreferences("local_storage", Context.MODE_PRIVATE)
     }
     
+    single {
+        Room
+            .databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .build()
+    }
     
     single<LocalStorage> {
         LocalStorage(get())
@@ -46,7 +51,4 @@ val dataModule = module {
         RetrofitNetworkClient(get(), androidContext())
     }
     
-    single<MovieCastConverter> {
-        MovieCastConverter()
-    }
 }

@@ -12,8 +12,15 @@
         android:id="@+id/personsFragment"/>
 
     <item
+        android:title="@string/history"
+        android:icon="@drawable/ic_history"
+        android:id="@+id/historyFragment"/>
+
+    <item
         android:title="@string/info"
         android:icon="@drawable/ic_info"
         android:id="@+id/infoFragment"/>
+
+
 
 </menu>
